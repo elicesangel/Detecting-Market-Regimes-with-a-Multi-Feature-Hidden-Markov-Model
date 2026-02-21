@@ -5,3 +5,9 @@ A Gaussian Hidden Markov Model assumes that observable market data is generated 
  emits observations from its own multivariate normal distribution 
 . The model parameters are estimated via the Baum-Welch algorithm (EM), and the number of states is selected by minimizing the Bayesian Information Criterion.
 The pipeline has five stages: data collection, feature engineering, PCA, HMM fitting with BIC selection, and diagnostics. Each is explained below with the corresponding code.
+
+#The start
+import hmmlearn  which provides the Gaussian HMM implementation with EM training. 
+import sklearn  that handles standardization and PCA. 
+Financial literature and simmilar repositories suggests markets exhibit 3–8 distinct behavioral modes.
+Use BIC as it penalizes unnecessary complexity.
