@@ -153,7 +153,7 @@ This creates a problem for the HMM. In order to solve it,I have to use diagonal 
 
 PCA solves this exactly. After transforming the features into principal components, the correlations are zero by construction and diagonal covariance becomes mathematically appropriate. In fact, fitting a diagonal-covariance HMM in PCA space is equivalent to fitting a full-covariance HMM in the original feature space, but with far fewer parameters. For K = 8 states and d = 15 components, this means 240 emission parameters instead of 960.
 
-Standardize all 29 features to zero mean and unit variance first (otherwise high-variance features like VIX_Level would dominate the decomposition), then retain enough components to explain 95% of total variance:
+Standardize all 29 features to zero mean and unit variance first (otherwise high-variance features like VIX_Level would dominate the decomposition), then retain enough components to explain 95.8% of total variance:
 
 ```python
 def do_pca(feat, target=0.95):
