@@ -218,7 +218,7 @@ def fit_hmm(X):
 | 7 | 155,851 | −76,839 | 258 |
 | **8** | **154,073** | **−75,760** | **303** |
 
-BIC selected **K = 8**: the market exhibits at least 8 statistically distinguishable behavioral modes.We can see on the graphics that BIC did not plateau — it is possible that K=9 or K=10 would score even lower. But following the literature, 8 states already yield highly interpretable regimes. Pushing further risks splitting meaningful states into unstable substates that fail out of sample.
+BIC selected **K = 8**: the market exhibits at least 8 statistically distinguishable behavioral modes. We can see on the graphics that BIC did not plateau, it is possible that K=9 or K=10 would score even lower. But following the literature, 8 states already yield highly interpretable regimes. Pushing further risks splitting meaningful states into unstable substates that fail out of sample.
 
 ---
 
@@ -255,9 +255,9 @@ def diagnose(df, feat, states, idx, model):
 
 The Sharpe spread between the best state (3.42) and the worst (−2.15) is over 5.5. The 8 states cluster into three actionable tiers:
 
-- **Full exposure** — S0, S2, S3, S7 (Sharpe > 1.6, vol < 15%)
-- **Reduced exposure** — S4, S6 (positive returns but elevated vol or low Sharpe)
-- **Defensive** — S1, S5 (negative returns, high vol)
+- **Bull** — S0, S2, S3, S7 (Sharpe > 1.6, vol < 15%)
+- **Sideways** — S4, S6 (positive returns but elevated vol or low Sharpe)
+- **Bear** — S1, S5 (negative returns, high vol)
 
 ---
 
