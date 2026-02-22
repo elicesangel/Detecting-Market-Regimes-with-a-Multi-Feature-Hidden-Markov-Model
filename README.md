@@ -218,7 +218,7 @@ def fit_hmm(X):
 | 7 | 155,851 | −76,839 | 258 |
 | **8** | **154,073** | **−75,760** | **303** |
 
-BIC selected **K = 8**: the market exhibits at least 8 statistically distinguishable behavioral modes.
+BIC selected **K = 8**: the market exhibits at least 8 statistically distinguishable behavioral modes.We can see on the graphics that BIC did not plateau — it is possible that K=9 or K=10 would score even lower. But following the literature, 8 states already yield highly interpretable regimes. Pushing further risks splitting meaningful states into unstable substates that fail out of sample.
 
 ---
 
