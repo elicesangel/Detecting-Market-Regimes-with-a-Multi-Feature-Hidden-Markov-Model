@@ -145,7 +145,7 @@ def features(df):
 Each component is a linear combination of the original features, constructed to capture the maximum possible variance in the data. The first component captures the most variance, the second captures the most of what remains (orthogonal to the first), and so on.
 In this pipeline, I use PCA for a more practical reason: to make the HMM behave better. It reduces dimensionality, removes redundancy, and gives the model a cleaner input space so regime detection is more stable and less noisy.
 
-Many of the 29 features are correlated. Realized volatility and VIX move together (r ≈ 0.87). Multi-horizon returns overlap mechanically (SPY_63D_Ret and SPY_126D_Ret share 63 days of data). Credit spread and drawdown both spike during crises. In total, 51 feature pairs have |r| > 0.7.
+Many of the 29 features are correlated. Realized volatility and VIX move together (r = 0.87). Multi-horizon returns overlap mechanically (SPY_63D_Ret and SPY_126D_Ret share 63 days of data). Credit spread and drawdown both spike during crises. In total, 51 feature pairs have r > 0.7.
 
 ![Feature Correlation Matrix](plots/plot1_correlation.png)
 
