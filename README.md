@@ -98,11 +98,11 @@ def features(df):
         f[f'{n}_Daily_Ret']=r; f[f'{n}_21D_Ret']=df[t].pct_change(21)
         f[f'{n}_63D_Ret']=df[t].pct_change(63); f[f'{n}_126D_Ret']=df[t].pct_change(126)
 
-    # Relative performance (2): large vs small cap tilt
+    # Relative performance (2): large vs small cap
     f['SPY_vs_IWM_21D'] = f['SPY_21D_Ret'] - f['IWM_21D_Ret']
     f['SPY_vs_IWM_63D'] = f['SPY_63D_Ret'] - f['IWM_63D_Ret']
 
-    # Realized vol (4): annualized rolling σ at 21d and 63d
+    # Realized vol (4): annualized rolling vol at 21d and 63d
     f['SPY_21D_RVol']=rv(sr,21); f['SPY_63D_RVol']=rv(sr,63)
     f['IWM_21D_RVol']=rv(ir,21); f['IWM_63D_RVol']=rv(ir,63)
 
@@ -110,7 +110,7 @@ def features(df):
     f['SPY_Range']  = (df['SPY_High'] - df['SPY_Low']) / df['SPY']
     f['SPY_VoV_20'] = f['SPY_21D_RVol'].rolling(20).std()
 
-    # VIX (5): level, Δ1d, Δ5d, implied/realized ratio, term structure
+    # VIX (5): level, Chng 1d, Chng 5d, implied/realized ratio, term structure
     f['VIX_Level']=df['VIX']; f['VIX_1D_Chg']=df['VIX'].diff(1); f['VIX_5D_Chg']=df['VIX'].diff(5)
     f['VIX_to_RVol'] = df['VIX'] / (f['SPY_21D_RVol'] * 100)
     f['VIX3M_VIX']   = df['VIX3M'] / df['VIX']
