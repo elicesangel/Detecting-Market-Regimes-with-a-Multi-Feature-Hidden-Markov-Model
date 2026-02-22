@@ -155,8 +155,6 @@ PCA solves this exactly. After transforming the features into principal componen
 
 Standardize all 29 features to zero mean and unit variance first (otherwise high-variance features like VIX_Level would dominate the decomposition), then retain enough components to explain 95% of total variance:
 
-![Feature Correlation Matrix](plots/plot1_correlation.png)
-
 ```python
 def do_pca(feat, target=0.95):
     X = feat.replace([np.inf, -np.inf], np.nan).dropna()
