@@ -77,7 +77,7 @@ HYG inception (April 2007) is the binding constraint on sample start date — al
 
 ## Step 2 — Feature Engineering
 
-We construct 29 features spanning seven categories. Each feature should have a different distribution under different market regimes.
+I construct 29 features spanning seven categories. Each feature should have a different distribution under different market regimes.
 
 ```python
 def features(df):
@@ -126,7 +126,15 @@ def features(df):
     return f.dropna()
 ```
 
-**Multi-horizon returns** (daily through 126d) let the model distinguish fast shocks from sustained trends. **Intraday range** $(H - L)/C$ captures within-day stress that close-to-close returns miss. **Vol-of-vol** measures whether volatility itself is unstable — a precursor to regime transitions. **VIX3M/VIX** exposes the volatility term structure: contango (> 1) = calm, backwardation (< 1) = stress. **Credit spread** as log(HYG) − log(LQD) gives a daily tradeable proxy for credit risk.
+**Multi-horizon returns** (daily through 126d) let the model distinguish fast shocks from sustained trends.
+
+**Intraday range** $(H - L)/C$ captures within-day stress that close-to-close returns miss. 
+
+**Vol-of-vol** measures whether volatility itself is unstable — a precursor to regime transitions.
+
+**VIX3M/VIX** exposes the volatility term structure: contango (> 1) = calm, backwardation (< 1) = stress. 
+
+**Credit spread** as log(HYG) − log(LQD) gives a daily tradeable proxy for credit risk.
 
 > **Output:** 29 features × 4,547 observations (Jan 2008 – Feb 2026).
 
@@ -134,13 +142,20 @@ def features(df):
 
 ## Step 3 — PCA
 
-Many of the 29 features are correlated. Feeding correlated features into a diagonal-covariance HMM violates the conditional independence assumption and produces degenerate states.
+Each component is a linear combination of the original features, constructed to capture the maximum possible variance in the data. The first component captures the most variance, the second captures the most of what remains (orthogonal to the first), and so on.
+In this pipeline, I use PCA for a more practical reason: to make the HMM behave better. It reduces dimensionality, removes redundancy, and gives the model a cleaner input space so regime detection is more stable and less noisy.
+
+Many of the 29 features are correlated. Realized volatility and VIX move together (r ≈ 0.87). Multi-horizon returns overlap mechanically (SPY_63D_Ret and SPY_126D_Ret share 63 days of data). Credit spread and drawdown both spike during crises. In total, 51 feature pairs have |r| > 0.7.
 
 ![Feature Correlation Matrix](plots/plot1_correlation.png)
 
-*51 feature pairs with |r| > 0.7. Without dimensionality reduction, diagonal covariance would be inappropriate.*
+This creates a problem for the HMM. In order to solve it,I have to use diagonal covariance  because it requires far fewer parameters than full covariance, fewer parameters means more stable estimation with finite data. But diagonal covariance assumes the features are uncorrelated given the state. Feeding in 29 correlated features violates this assumption and produces degenerate states where the model overfits to spurious correlation patterns.....
 
-PCA rotates the feature space into orthogonal components. We standardize first, then keep enough components to explain 95% of variance:
+PCA solves this exactly. After transforming the features into principal components, the correlations are zero by construction and diagonal covariance becomes mathematically appropriate. In fact, fitting a diagonal-covariance HMM in PCA space is equivalent to fitting a full-covariance HMM in the original feature space, but with far fewer parameters. For K = 8 states and d = 15 components, this means 240 emission parameters instead of 960.
+
+Standardize all 29 features to zero mean and unit variance first (otherwise high-variance features like VIX_Level would dominate the decomposition), then retain enough components to explain 95% of total variance:
+
+![Feature Correlation Matrix](plots/plot1_correlation.png)
 
 ```python
 def do_pca(feat, target=0.95):
