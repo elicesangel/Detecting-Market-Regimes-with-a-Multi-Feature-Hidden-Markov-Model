@@ -263,9 +263,21 @@ The Sharpe spread between the best state (3.42) and the worst (−2.15) is over 
 
 ## Step 6 — Filtered Probabilities
 
-Viterbi uses the entire time series (including future data). For real-time regime estimation we use the forward algorithm — filtered probabilities condition only on data up to time $t$:
+### Viterbi vs. Filtered: Two Different Questions
+
+Once the HMM is trained, there are two ways to ask "what regime are we in?"
+
+**Viterbi decoding** finds the single most likely sequence of states across the entire time series. It looks at all the data — past, present, and future — to decide what state each day was in. This is useful for labeling history (which is what we did in Step 5 to compute diagnostics), but it is useless for real-time decisions because it requires data that has not happened yet.
+
+**Filtered probabilities** answer a different question: given only the data observed up to right now, what is the probability of being in each state today? This is the forward algorithm — it processes observations sequentially, updating the state probabilities one day at a time, never looking ahead. This is what you would actually use in production.
+
+### The Forward Algorithm
+
+The forward variable $\alpha_t(k)$ represents the joint probability of having observed all data up to time $t$ and being in state $k$ at time $t$. At each step, it combines two pieces of information: the transition probabilities (how likely is it to move from yesterday's state to today's?) and the emission likelihood (how consistent is today's observation with each state?). The filtered probability is simply $\alpha_t(k)$ normalized to sum to one:
 
 $$P(S_t = k \mid y_{1:t}) = \frac{\alpha_t(k)}{\sum_j \alpha_t(j)}$$
+
+The implementation works entirely in log-space because the raw $\alpha$ values are products of thousands of small probabilities — they underflow to zero in double precision after roughly 100 time steps. The `logaddexp.reduce` function computes $\log \sum e^{a_i}$ in a numerically stable way.
 
 ```python
 def filtered(model, X):
@@ -287,7 +299,7 @@ def filtered(model, X):
     return p / p.sum()
 ```
 
-> **Current regime (2026-02-21):** S6 (52.6%) / S3 (47.4%). The model is near a boundary between "transition" (+10.4%/yr, Sharpe 0.69) and "moderate bull" (+25.3%/yr, Sharpe 1.63).
+> **Current regime (2026-02-21):** S6 at 52.6% probability, S3 at 47.4%. The model is near a regime boundary — split almost evenly between "transition" (S6: +10.4%/yr, 14.6% vol, Sharpe 0.69) and "moderate bull" (S3: +25.3%/yr, 14.2% vol, Sharpe 1.63). When filtered probabilities are this close, the model is telling us the market's statistical signature is ambiguous — it does not clearly belong to either state. In practice, this is itself useful information: a probability-weighted position would blend both exposures rather than committing fully to one regime.
 
 ---
 
