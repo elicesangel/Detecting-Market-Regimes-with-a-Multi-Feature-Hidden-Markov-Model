@@ -189,8 +189,23 @@ def plot_diagnostics(diag, model, save_dir):
     plt.savefig(os.path.join(save_dir,'plot4_diagnostics.png'),dpi=150,bbox_inches='tight'); plt.close()
 
 
-def plot_regimes(df, feat, states, idx, diag, model, save_dir):
-    print("  Plot 5/5: Regime timeline")
+def plot_regimes_colors(df, states, idx, diag, model, save_dir):
+    print("  Plot 5/6: Regime timeline — colours only")
+    K=model.n_components; dates=idx; order=diag['state'].tolist()
+    cm=plt.cm.RdYlGn(np.linspace(1,0,K)); sc={s:cm[i] for i,s in enumerate(order)}
+    ss=pd.Series(states,index=dates); spy=df['SPY'].reindex(dates)
+    fig,ax=plt.subplots(figsize=(20,6))
+    ax.plot(dates,spy,color='#2c3e50',lw=.8)
+    for s in range(K):
+        ar=diag.loc[diag['state']==s,'ann_ret'].values[0]
+        ax.fill_between(dates,spy.min()*.93,spy.max()*1.07,where=(ss==s),alpha=.15,color=sc[s],label=f"S{s} ({ar:.0f}%/yr)")
+    ax.set_title(f'SPY — HMM v7 ({K} Regimes, BIC-selected) — Market Regime Changes',fontsize=14,fontweight='bold')
+    ax.set_ylabel('Price ($)'); ax.legend(loc='upper left',fontsize=8,ncol=min(K,4)); ax.set_xlim(dates[0],dates[-1])
+    plt.tight_layout(); plt.savefig(os.path.join(save_dir,'plot5_regimes_colors.png'),dpi=150,bbox_inches='tight'); plt.close()
+
+
+def plot_regimes_combined(df, feat, states, idx, diag, model, save_dir):
+    print("  Plot 6/6: Regime timeline — combined")
     K=model.n_components; dates=idx; order=diag['state'].tolist()
     cm=plt.cm.RdYlGn(np.linspace(1,0,K)); sc={s:cm[i] for i,s in enumerate(order)}
     ss=pd.Series(states,index=dates); spy=df['SPY'].reindex(dates)
@@ -206,7 +221,7 @@ def plot_regimes(df, feat, states, idx, diag, model, save_dir):
     dd=feat['SPY_126D_DD'].reindex(dates)*100
     ax[2].fill_between(dates,dd,0,alpha=.3,color='red'); ax[2].plot(dates,dd,color='#c0392b',lw=.6)
     ax[2].set_ylabel('126d DD (%)'); ax[2].set_xlim(dates[0],dates[-1])
-    plt.tight_layout(); plt.savefig(os.path.join(save_dir,'plot5_regimes.png'),dpi=150,bbox_inches='tight'); plt.close()
+    plt.tight_layout(); plt.savefig(os.path.join(save_dir,'plot6_regimes_combined.png'),dpi=150,bbox_inches='tight'); plt.close()
 
 
 # ═══════════════════════════════════════════════
@@ -231,7 +246,8 @@ def run():
     plot_scree(pca, npc, OUT)
     plot_bic(bic_res, OUT)
     plot_diagnostics(diag, model, OUT)
-    plot_regimes(df, feat, states, idx, diag, model, OUT)
+    plot_regimes_colors(df, states, idx, diag, model, OUT)
+    plot_regimes_combined(df, feat, states, idx, diag, model, OUT)
     summary = {'version':'v7','n_feat':feat.shape[1],'n_pca':npc,'K':int(model.n_components),
         'bic':[(k,float(b),float(l)) for k,b,l in bic_res],
         'diagnostics':diag.to_dict(orient='records'),
