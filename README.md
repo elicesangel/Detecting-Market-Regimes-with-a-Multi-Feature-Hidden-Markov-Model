@@ -263,11 +263,7 @@ The Sharpe spread between the best state (3.42) and the worst (−2.15) is over 
 
 ## Step 6 — Filtered Probabilities
 
-### Viterbi vs. Filtered: Two Different Questions
-
 Once the HMM is trained, we use Filtered probabilities; given only the data observed up to right now, what is the probability of being in each state today? This is the forward algorithm.
-
-### The Forward Algorithm
 
 The forward variable $\alpha_t(k)$ represents the joint probability of having observed all data up to time $t$ and being in state $k$ at time $t$. At each step, it combines two pieces of information: the transition probabilities (how likely is it to move from yesterday's state to today's?) and the emission likelihood (how consistent is today's observation with each state?). The filtered probability is simply $\alpha_t(k)$ normalized to sum to one:
 
@@ -303,8 +299,7 @@ def filtered(model, X):
 
 ![Regime Timeline](plots/plot5_regimes.png)
 
-*SPY price with colored regime bands (green = bullish, yellow = transition, red = bearish/crisis). Bottom panels: 21-day realized vol and 126-day drawdown. Major stress episodes (GFC, EU crisis, COVID, 2022 bear) are correctly captured.*
-
+*SPY price with colored regime bands (green = bullish, yellow = transition, red = bearish/crisis). Bottom panels: 21-day realized vol and 126-day drawdown.
 ---
 
 ## References
