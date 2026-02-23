@@ -299,7 +299,7 @@ def filtered(model, X):
 
 ![Regime Timeline](plots/plot5_regimes.png)
 
-*SPY price with colored regime bands (green = bullish, yellow = transition, red = bearish/crisis). Bottom panels: 21-day realized vol and 126-day drawdown.
+SPY price with colored regime bands (green = bullish, yellow = transition, red = bearish/crisis). Bottom panels: 21-day realized vol and 126-day drawdown.
 ---
 
 ## References
